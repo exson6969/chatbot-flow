@@ -18,7 +18,7 @@ const TextNode = ({ data }: { data: { label: string } }) => {
         {/* Right side of the header */}
         <div className="flex items-center">
           <Image
-            src="/whatsapp.png"
+            src="/WhatsApp.png"
             alt="WhatsApp"
             width={16}
             height={16}
