@@ -2,6 +2,7 @@
 
 A dynamic and extensible chatbot flow builder created for the frontend assessment. Built with Next.js, TypeScript, and React Flow.
 
+![Chatbot Flow Builder Demo](https://chatbot-flow-flame.vercel.app/demo.gif)
 
 ### Core Features
 
