@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { ArrowLeft } from 'lucide-react';
+import { CustomNode } from '../types';
 
 interface SettingsPanelProps {
-  selectedNode: any;
-  setNodes: React.Dispatch<React.SetStateAction<any[]>>;
-  setSelectedNode: React.Dispatch<React.SetStateAction<any>>;
+  selectedNode: CustomNode;
+  setNodes: React.Dispatch<React.SetStateAction<CustomNode[]>>;
+  setSelectedNode: React.Dispatch<React.SetStateAction<CustomNode | null>>;
 }
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({
@@ -35,13 +36,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
     setSelectedNode(null);
   };
 
-  /**
-   * A helper function to get a user-friendly display name for a node type.
-   * This makes the component extensible for future node types.
-   * param {string} type - The internal type of the node like textNode.
-   * returns {string} The display-friendly name eg 'test message 1'.
-   */
-  const getNodeDisplayName = (type: string): string => {
+  const getNodeDisplayName = (type: string | undefined): string => {
     switch (type) {
       case 'textNode':
         return 'Message';

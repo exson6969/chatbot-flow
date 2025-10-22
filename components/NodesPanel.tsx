@@ -1,4 +1,4 @@
-import { MessageCircleMore, Mail } from 'lucide-react';
+import { MessageCircleMore } from 'lucide-react';
 import React from 'react';
 
 // Define the available nodes. To add a new node, you just need to add a new object to this array.

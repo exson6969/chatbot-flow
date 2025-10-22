@@ -12,6 +12,7 @@ import ReactFlow, {
   Connection,
   Edge,
   MarkerType,
+  ReactFlowInstance,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import toast from 'react-hot-toast';
@@ -19,6 +20,7 @@ import NodesPanel from '@/components/NodesPanel';
 import SettingsPanel from '@/components/SettingsPanel';
 import TextNode from '@/components/TextNode';
 import FlowGenerator from '@/components/FlowGenerator';
+import { CustomNode } from '../../types';
 
 const nodeTypes = {
   textNode: TextNode,
@@ -46,7 +48,8 @@ const FlowBuilder = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [selectedNode, setSelectedNode] = useState<CustomNode | null>(null);
+  const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
 
   const onConnect = useCallback(
     (params: Edge | Connection) => {
@@ -62,7 +65,7 @@ const FlowBuilder = () => {
     [edges, setEdges]
   );
 
-  const onNodeClick = (_: React.MouseEvent, node: any) => {
+  const onNodeClick = (_: React.MouseEvent, node: CustomNode) => {
     setSelectedNode(node);
   };
 
@@ -78,13 +81,13 @@ const FlowBuilder = () => {
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
-      if (reactFlowWrapper.current) {
+      if (reactFlowWrapper.current && reactFlowInstance) {
         const type = event.dataTransfer.getData('application/reactflow');
-        const position = (window as any).reactFlowInstance.project({
+        const position = reactFlowInstance.project({
           x: event.clientX,
           y: event.clientY - reactFlowWrapper.current.getBoundingClientRect().top,
         });
-        const newNode = {
+        const newNode: CustomNode = {
           id: `node_${+new Date()}`,
           type,
           position,
@@ -93,7 +96,7 @@ const FlowBuilder = () => {
         setNodes((nds) => nds.concat(newNode));
       }
     },
-    [setNodes]
+    [setNodes, reactFlowInstance]
   );
 
   const onSave = () => {
@@ -114,12 +117,11 @@ const FlowBuilder = () => {
     }
   };
 
-  const setGeneratedNodes = (newNodes: any[]) => {
+  const setGeneratedNodes = (newNodes: CustomNode[]) => {
     setNodes(newNodes);
     setTimeout(() => {
-      const flowInstance = (window as any).reactFlowInstance;
-      if (flowInstance) {
-        flowInstance.fitView();
+      if (reactFlowInstance) {
+        reactFlowInstance.fitView();
       }
     }, 100);
   };
@@ -136,7 +138,7 @@ const FlowBuilder = () => {
           onNodeClick={onNodeClick}
           onPaneClick={onPaneClick}
           nodeTypes={nodeTypes}
-          onInit={(instance) => ((window as any).reactFlowInstance = instance)}
+          onInit={setReactFlowInstance}
           onDrop={onDrop}
           onDragOver={onDragOver}
           fitView

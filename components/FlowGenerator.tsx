@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
+import { CustomNode, CustomEdge } from '../types'; 
 
 // Defined the props interface, which includes the state setters from the main page
 interface FlowGeneratorProps {
-  setNodes: (nodes: any[]) => void;
-  setEdges: (edges: any[]) => void;
+  setNodes: (nodes: CustomNode[]) => void;
+  setEdges: (edges: CustomEdge[]) => void;
 }
 
 const FlowGenerator: React.FC<FlowGeneratorProps> = ({ setNodes, setEdges }) => {
@@ -31,20 +32,24 @@ const FlowGenerator: React.FC<FlowGeneratorProps> = ({ setNodes, setEdges }) => 
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData: { error?: string } = await response.json();
         throw new Error(errorData.error || 'Failed to generate flow.');
       }
 
-      const flow = await response.json();
+      const flow: { nodes: CustomNode[]; edges: CustomEdge[] } = await response.json();
 
       // Update the main state with the generated nodes and edges
       setNodes(flow.nodes || []);
       setEdges(flow.edges || []);
 
       toast.success('Flow generated successfully!', { id: toastId });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      toast.error(error.message || 'An unexpected error occurred.', { id: toastId });
+      let errorMessage = 'An unexpected error occurred.';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      toast.error(errorMessage, { id: toastId });
     } finally {
       setIsLoading(false);
     }
